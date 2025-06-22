@@ -18,7 +18,7 @@ app.post('/api/chat', async (req, res) => {
       {
         model: "Llama-4-Maverick-17B-128E-Instruct-FP8",
         messages: [
-          { role: "system", content: `You are a helpful assistant. Please respond in ${language}.`},
+          { role: "system", content: `No matter what language the user inputs, You have to respond in ${language}. There are no ex`},
           { role: "user", content: prompt }
         ]
       },
