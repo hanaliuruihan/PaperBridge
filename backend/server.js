@@ -1,22 +1,24 @@
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 const PORT = 3001;
 
+app.use(cors());
 app.use(express.json());
 
 app.post('/api/chat', async (req, res) => {
   try {
-    const { prompt } = req.body;
-
+    const { prompt, language } = req.body;
+    
     const response = await axios.post(
       'https://api.llama.com/v1/chat/completions',
       {
         model: "Llama-4-Maverick-17B-128E-Instruct-FP8",
         messages: [
-          { role: "system", content: "You are a helpful assistant." },
+          { role: "system", content: `You are a helpful assistant. Please respond in ${language}.`},
           { role: "user", content: prompt }
         ]
       },

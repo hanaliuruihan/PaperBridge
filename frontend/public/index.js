@@ -16,3 +16,30 @@ document.getElementById("docForm").addEventListener("submit", async (e) => {
   document.getElementById("result").innerText = JSON.stringify(data, null, 2);
 
 });
+
+document.getElementById('language-select').addEventListener('change', function () {
+  const lang = this.value;
+
+  const uiText = {
+    en: {
+      placeholder: "Type a message...",
+      sendButton: "Send",
+      title: "PaperBridge"
+    },
+    es: {
+      placeholder: "Escribe un mensaje...",
+      sendButton: "Enviar",
+      title: "PaperPuente"
+    },
+    fr: {
+      placeholder: "Tapez un message...",
+      sendButton: "Envoyer",
+      title: "PontPapier"
+    }
+  };
+
+  const selected = uiText[lang];
+  document.getElementById('chat-input').placeholder = selected.placeholder;
+  document.querySelector('#chat-form button').textContent = selected.sendButton;
+  document.querySelector('.title').textContent = selected.title;
+});
