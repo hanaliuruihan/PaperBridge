@@ -1,45 +1,98 @@
-document.getElementById("docForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const text = document.getElementById("docText").value;
+let messageHistory = [
+  {
+    role: "system",
+    content: "You are a helpful assistant. Please remember the conversation history and respond accordingly."
+  }
+];
 
-  const response = await fetch("http://localhost:3001/api/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      prompt: text // or messages if you're passing system + user roles
-    })
-  });
+window.addEventListener('DOMContentLoaded', () => {
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  const chatHistory = document.getElementById('chat-history');
+  const languageSelect = document.getElementById('language-select');
 
-  const data = await response.json();
-  document.getElementById("result").innerText = JSON.stringify(data, null, 2);
-
-});
-
-document.getElementById('language-select').addEventListener('change', function () {
-  const lang = this.value;
-
-  const uiText = {
+  const translations = {
     en: {
       placeholder: "Type a message...",
-      sendButton: "Send",
-      title: "PaperBridge"
+      send: "Send",
+      title: "PaperBridge",
+      languageLabel: "Language:",
+      chatLabel: "Previous Chats:"
     },
     es: {
       placeholder: "Escribe un mensaje...",
-      sendButton: "Enviar",
-      title: "PaperPuente"
+      send: "Enviar",
+      title: "PaperPuente",
+      languageLabel: "Idioma:",
+      chatLabel: "Chats anteriores:"
     },
     fr: {
       placeholder: "Tapez un message...",
-      sendButton: "Envoyer",
-      title: "PontPapier"
+      send: "Envoyer",
+      title: "PontPapier",
+      languageLabel: "Langue:",
+      chatLabel: "Discussions précédentes:"
+    },
+    cn: {
+      placeholder: "请输入你的需求...",
+      send: "发送",
+      title: "纸桥",
+      languageLabel: "语言:",
+      chatLabel: "聊天历史:"
     }
   };
 
-  const selected = uiText[lang];
-  document.getElementById('chat-input').placeholder = selected.placeholder;
-  document.querySelector('#chat-form button').textContent = selected.sendButton;
-  document.querySelector('.title').textContent = selected.title;
+  languageSelect.addEventListener('change', function () {
+    const lang = this.value;
+    const ui = translations[lang] || translations.en;
+
+    chatInput.placeholder = ui.placeholder;
+    document.querySelector('#chat-form button').textContent = ui.send;
+    document.querySelector('.title').textContent = ui.title;
+    document.querySelector('label[for="language-select"]').textContent = ui.languageLabel;
+    document.querySelector('label[for="chat-select"]').textContent = ui.chatLabel;
+  });
+
+  chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const message = chatInput.value.trim();
+    const language = languageSelect.value;
+
+    if (message === "") return;
+
+    // Add user message to chat
+    const userMsg = document.createElement('div');
+    userMsg.className = 'message user-message';
+    userMsg.textContent = "User: " + message;
+    chatHistory.appendChild(userMsg);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    chatInput.value = "";
+
+    
+   try {
+      messageHistory.push({ role: "user", content: message });
+
+      const response = await fetch("http://localhost:3001/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: messageHistory, language }),
+      });
+
+      const data = await response.json();
+      const reply = data?.completion_message?.content?.text || "AI did not respond.";
+
+      const aiMsg = document.createElement('div');
+      aiMsg.className = 'message ai-message';
+      aiMsg.textContent = "AI: " + reply;
+      chatHistory.appendChild(aiMsg);
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    } catch (err) {
+      const errorMsg = document.createElement('div');
+      errorMsg.className = 'message ai-message';
+      errorMsg.textContent = "Error talking to LLaMA: " + err.message;
+      chatHistory.appendChild(errorMsg);
+    }
+  });
 });

@@ -39,11 +39,15 @@
     }
     /* Sidebar styles */
     #sidebar {
-      width: 200px;
+      width: 50vw;
       background: #f0f0f0;
       border-right: 1px solid #ccc;
       height: 100%;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 10px;
     }
     /* Collapsed sidebar (hidden) */
     #sidebar.collapsed {
@@ -134,6 +138,14 @@
     <!-- Collapsible Sidebar -->
     <aside id="sidebar">
       <div class="sidebar-section">
+        <h3>User Information</h3>
+        <p><strong>Name:</strong> Hana Liu</p>
+        <p><strong>Birthdate:</strong> 2006-03-15</p>
+        <p><strong>Citizenship:</strong> China</p>
+        <p><strong>Date of Entry:</strong> 2014-08-01</p>
+      </div>
+
+      <div class="sidebar-section">
         <label for="language-select">Language:</label>
         <select id="language-select">
           <option value="en">English</option>
@@ -143,6 +155,24 @@
           <!-- Additional languages can be added here -->
         </select>
       </div>
+
+      <div class="sidebar-section">
+        <h3>Upcoming Deadlines</h3>
+        <ul>
+          <li>🗓️ FAFSA Renewal – 2025-07-01</li>
+          <li>📄 DACA Renewal – 2025-08-15</li>
+          <li>🎓 UW Autumn Registration – 2025-09-25</li>
+        </ul>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Upload to LLaMA</h3>
+        <form id="upload-form">
+          <input type="file" id="document-file" />
+          <button type="submit">Upload</button>
+        </form>
+      </div>
+
       <div class="sidebar-section">
         <label for="chat-select">Previous Chats:</label>
         <select id="chat-select">
@@ -150,6 +180,7 @@
           <!-- Chat session options will be populated via script -->
         </select>
       </div>
+      
     </aside>
 
     <!-- Main Chat Area -->
@@ -249,7 +280,7 @@
       .catch(err => {
         const errorMsg = document.createElement('div');
         errorMsg.className = 'message ai-message';
-        errorMsg.textContent = "⚠️ Error talking to LLaMA: " + err.message;
+        errorMsg.textContent = "Error talking to LLaMA: " + err.message;
         chatHistory.appendChild(errorMsg);
       });
     });
@@ -257,5 +288,6 @@
     // Initialize the page by loading previous chats
     window.addEventListener('DOMContentLoaded', loadChatSessions);
   </script>
+  <script src="index.js"></script>
 </body>
 </html>
